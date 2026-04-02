@@ -1,0 +1,26 @@
+name: support_ops_env
+version: "1.0.0"
+description: >
+  Real-world customer support operations environment. An AI agent triages
+  tickets, drafts responses, and manages escalation workflows — simulating
+  genuine enterprise support ops tasks used by thousands of companies.
+author: your-hf-username
+tags:
+  - openenv
+  - customer-support
+  - enterprise
+  - nlp
+  - text
+action_type: SupportAction
+observation_type: SupportObservation
+reward_type: SupportReward
+tasks:
+  - name: ticket_triage
+    difficulty: easy
+    description: Classify ticket category and priority
+  - name: draft_response
+    difficulty: medium
+    description: Draft a resolution response using knowledge base
+  - name: full_resolution
+    difficulty: hard
+    description: Full escalation cycle with SLA pressure
