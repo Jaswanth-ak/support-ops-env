@@ -25,7 +25,7 @@ MAX_TOKENS   = 512
 client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
 
 SYSTEM_PROMPT = """You are an expert customer support agent.
-You will receive a support ticket and instructions. 
+You will receive a support ticket and instructions.
 Respond ONLY with a valid JSON object matching this schema:
 {
   "category": "billing|technical|account|shipping|general",
@@ -37,9 +37,7 @@ No extra text. No markdown. Only the JSON object."""
 
 
 def parse_action(text: str) -> SupportAction:
-    """Extract JSON from model output and parse into SupportAction."""
     text = text.strip()
-    # Try to extract JSON block if model adds extra text
     match = re.search(r'\{.*\}', text, re.DOTALL)
     if match:
         text = match.group(0)
@@ -47,7 +45,6 @@ def parse_action(text: str) -> SupportAction:
         data = json.loads(text)
         return SupportAction(**data)
     except Exception:
-        # Fallback — at minimum try to extract category
         return SupportAction(
             category="general",
             priority="P3",
@@ -60,15 +57,18 @@ def run_episode() -> list:
     env = SupportOpsEnv()
     obs = env.reset()
     scores = []
+    task_names = ["ticket_triage", "draft_response", "full_resolution"]
 
-    print("\n" + "="*60)
-    print("SupportOpsEnv — Baseline Inference Run")
-    print(f"Model: {MODEL_NAME}")
-    print("="*60)
+    # [START] log — required format
+    print(json.dumps({
+        "type": "[START]",
+        "model": MODEL_NAME,
+        "environment": "SupportOpsEnv",
+        "tasks": task_names,
+        "total_tasks": 3
+    }))
 
     for step in range(MAX_STEPS):
-        print(f"\n--- Task {step+1}: {obs.task_name} ({obs.instructions[:60]}...) ---")
-
         user_content = f"""TICKET ID: {obs.ticket_id}
 SUBJECT: {obs.ticket_subject}
 
@@ -98,27 +98,49 @@ INSTRUCTIONS:
             )
             response_text = completion.choices[0].message.content or ""
         except Exception as exc:
-            print(f"  Model request failed: {exc}. Using fallback.")
+            print(f"Model request failed: {exc}. Using fallback.")
             response_text = '{"category":"general","priority":"P3","resolution_decision":"resolve"}'
 
         action = parse_action(response_text)
-        print(f"  Action: category={action.category}, priority={action.priority}, "
-              f"decision={action.resolution_decision}")
-
-        obs, reward, done, info = env.step(action)
+        obs_next, reward, done, info = env.step(action)
         scores.append(reward)
-        print(f"  Reward: {reward:.4f} | Breakdown: {info['reward_breakdown']}")
 
+        # [STEP] log — required format
+        print(json.dumps({
+            "type": "[STEP]",
+            "step": step + 1,
+            "task": task_names[step],
+            "difficulty": info["difficulty"],
+            "action": {
+                "category": action.category,
+                "priority": action.priority,
+                "resolution_decision": action.resolution_decision,
+                "response_text": (action.response_text or "")[:100]
+            },
+            "reward": round(reward, 4),
+            "reward_breakdown": info["reward_breakdown"],
+            "done": done
+        }))
+
+        obs = obs_next
         if done:
             break
 
-    print("\n" + "="*60)
-    print("RESULTS:")
-    for i, s in enumerate(scores):
-        task_name = ["ticket_triage", "draft_response", "full_resolution"][i]
-        print(f"  Task {i+1} ({task_name}): {s:.4f}")
-    print(f"  Average score: {sum(scores)/len(scores):.4f}")
-    print("="*60)
+    avg = round(sum(scores) / len(scores), 4)
+
+    # [END] log — required format
+    print(json.dumps({
+        "type": "[END]",
+        "tasks_completed": len(scores),
+        "scores": {
+            "ticket_triage":   round(scores[0], 4) if len(scores) > 0 else 0,
+            "draft_response":  round(scores[1], 4) if len(scores) > 1 else 0,
+            "full_resolution": round(scores[2], 4) if len(scores) > 2 else 0,
+        },
+        "average_score": avg,
+        "model": MODEL_NAME
+    }))
+
     return scores
 
 
