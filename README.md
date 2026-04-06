@@ -1,3 +1,13 @@
+---
+title: SupportOpsEnv
+emoji: 🎧
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+tags:
+  - openenv
+---
 # SupportOpsEnv
 
 A real-world customer support operations environment for training AI agents using the OpenEnv framework.
