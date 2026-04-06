@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "support-ops-env"
+version = "1.0.0"
+description = "Real-world customer support operations environment for training AI agents"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi==0.115.0",
+    "uvicorn==0.30.6",
+    "pydantic==2.7.4",
+    "openai==1.35.0",
+    "python-dotenv==1.0.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "httpx"]
+
+[tool.openenv]
+name = "support_ops_env"
+version = "1.0.0"
+action_type = "SupportAction"
+observation_type = "SupportObservation"
