@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.scripts]
-server = "server:app"
+server = "server.app:app"
 
 [tool.openenv]
 name = "support_ops_env"
