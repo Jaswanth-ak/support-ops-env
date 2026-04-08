@@ -28,4 +28,3 @@ server = "support_ops_env.server.app:main"
 [tool.setuptools]
 include-package-data = true
 packages = ["support_ops_env", "support_ops_env.server"]
-package-dir = { "support_ops_env" = "support_ops_env", "support_ops_env.server" = "server" }
