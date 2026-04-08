@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from support_ops_env.env import SupportOpsEnv
-from support_ops_env.models import SupportAction, SupportObservation
+from support_ops_env.models import SupportAction
 from typing import Any, Dict
 
 app = FastAPI(title="SupportOpsEnv", version="1.0.0")
@@ -35,3 +35,12 @@ def state() -> Dict[str, Any]:
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+def main():
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=7860)
+
+
+if __name__ == "__main__":
+    main()
