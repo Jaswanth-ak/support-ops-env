@@ -13,8 +13,14 @@ Perfect for testing HTTP server infrastructure.
 
 from uuid import uuid4
 
-from openenv.core.env_server.interfaces import Environment
-from openenv.core.env_server.types import State
+class State:
+    def __init__(self, episode_id: str, step_count: int):
+        self.episode_id = episode_id
+        self.step_count = step_count
+
+
+class Environment:
+    pass
 
 try:
     from ..models import SupportOpsAction, SupportOpsObservation

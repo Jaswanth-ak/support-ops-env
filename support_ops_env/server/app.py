@@ -35,12 +35,8 @@ except Exception as e:  # pragma: no cover
         "openenv is required for the web interface. Install dependencies with '\n    uv sync\n'"
     ) from e
 
-try:
-    from ..models import SupportOpsAction, SupportOpsObservation
-    from .support_ops_env_environment import SupportOpsEnvironment
-except ModuleNotFoundError:
-    from models import SupportOpsAction, SupportOpsObservation
-    from server.support_ops_env_environment import SupportOpsEnvironment
+from support_ops_env.models import SupportOpsAction, SupportOpsObservation
+from support_ops_env.server.support_ops_env_environment import SupportOpsEnvironment
 
 
 # Create the app with web interface and README integration

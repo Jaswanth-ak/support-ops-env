@@ -4,7 +4,7 @@ description: >
   Real-world customer support operations environment. An AI agent triages
   tickets, drafts responses, and manages escalation workflows — simulating
   genuine enterprise support ops tasks used by thousands of companies.
-author: your-hf-username
+author: jaswanthak
 tags:
   - openenv
   - customer-support
